@@ -1,0 +1,122 @@
+---
+title: "Data Manipulation and Visualization with tidyverse"
+author: "Jordan DiNardo, Erica Mason"
+date: "5/16/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Load libraries
+```{r}
+library(tidyverse)
+```
+Dataset:iris
+```{r}
+str(iris)
+head(iris)
+```
+----------------------Dplyr----------------------------------------------------
+
+Filter
+```{r}
+#base R indexing to select values within a dataframe
+iris[iris$Species=="setosa",]
+subset(iris,Species=="setosa")
+
+iris[(iris$Sepal.Width>5.0),]
+
+#dplyr method-filter
+filter(iris,Species=="setosa")
+filter(iris,Sepal.Length>5.0)
+
+#dplyr method: multiple filters
+filter(iris,Species=="setosa"&Sepal.Length>5.0)
+```
+
+Select
+```{r}
+#base R indexing to select columns from a dataframe
+iris[,c("Species","Petal.Length")]
+
+#dplyr methid-select
+select(iris,Species,Petal.Length)
+```
+
+Arrange to sort data
+```{r}
+#base R sorting of data frame
+iris[order(iris$Species,iris$Petal.Length),]
+
+#dplyr method-arrange
+iris%>%
+  arrange(Species,Petal.Length)
+```
+
+Group_by, Mutate (to create new variable), and Summarise
+```{r}
+mutate.iris<-iris%>%
+  mutate(
+    Sepal.Area= (Sepal.Length*Sepal.Width),
+    Petal.Area= (Petal.Length*Petal.Width),
+    Sepal.Petal.Length= (Sepal.Length/Petal.Length)
+  )
+head(mutate.iris)
+
+summarise.iris<-mutate.iris%>%
+  group_by(Species)%>%
+  summarise(
+    mean.Sepal.Length=mean(Sepal.Length),
+    mean.Petal.Length=mean(Petal.Length),
+    mean.Sepal.Area=mean(Sepal.Area),
+    mean.Petal.Area=mean(Petal.Area)
+  )
+head(summarise.iris)
+```
+
+
+--------------------Tidyr------------------------------------------------------
+Need to create or find a "wide" dataset to manipulate
+```{r}
+#gather
+#spread
+#unite
+#separate
+```
+
+-------------------ggplot--------------------------------------------------------
+
+```{r}
+#careful where you set arguments with aes!!
+
+#"global" group by species
+ggplot(iris,aes(x=Petal.Length,y=Sepal.Length,colour=Species))+
+  geom_point()+
+  geom_smooth(method=lm)+
+  labs(title="Petal Length vs Sepal Length by Species",x="Petal Length",y="Sepal Length")
+
+#local group by species in geom_point
+ggplot(iris,aes(x=Petal.Length,y=Sepal.Length))+
+  geom_point(aes(colour=Species))+
+  geom_smooth(method=lm)+
+   labs(title="Petal Length vs Sepal Length by Species",x="Petal Length",y="Sepal Length")
+```
+
+Facet Wrap
+```{r}
+ggplot(iris,aes(x=Petal.Length,y=Sepal.Length))+
+  geom_point()+
+  geom_smooth(method=lm)+
+  facet_wrap(~Species)+
+  labs(title="Petal Length vs Sepal Length by Species",x="Petal Length",y="Sepal Length")
+```
+
+Bar Graphs
+```{r}
+ggplot(summarise.iris,aes(x=Species,y=mean.Petal.Length))+
+  geom_bar(stat="identity")+
+  labs(title="Mean Petal Length",x="Species",y="Petal Length")
+```
+
