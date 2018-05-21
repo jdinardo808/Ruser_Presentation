@@ -80,10 +80,19 @@ head(summarise.iris)
 --------------------Tidyr------------------------------------------------------
 Need to create or find a "wide" dataset to manipulate
 ```{r}
+#Read in model results example of "wide" dataset
+data<-read.csv("/Volumes/DINARDO/FisheryDependent/Results/maxentResults.csv")
+head(data)
+
+#select last row
+data<-data[101,c(8:23)]
+
 #gather
+data<-data%>%
+  gather(names,value,bathymetry.contribution:Training.gain.with.only.surface_temp)
+
 #spread
-#unite
-#separate
+data<-spread(data,names,value)
 ```
 
 -------------------ggplot--------------------------------------------------------
